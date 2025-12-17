@@ -208,12 +208,17 @@ async function copyLink(shortUrl) {
 
 async function loadOverallStats() {
     try {
-        const response = await fetch(`${API_BASE.stats}/api/stats/overall`);
-        const data = await response.json();
+        // Get URL count from url-service
+        const urlResponse = await fetch(`${API_BASE.url}/api/urls/all?limit=1`);
+        const urlData = await urlResponse.json();
 
-        document.getElementById('total-urls').textContent = formatNumber(data.total_urls || 0);
-        document.getElementById('total-clicks').textContent = formatNumber(data.total_clicks || 0);
-        document.getElementById('today-clicks').textContent = formatNumber(data.today_clicks || 0);
+        // Get click stats from stats-service
+        const statsResponse = await fetch(`${API_BASE.stats}/api/stats/overall`);
+        const statsData = await statsResponse.json();
+
+        document.getElementById('total-urls').textContent = formatNumber(urlData.total || 0);
+        document.getElementById('total-clicks').textContent = formatNumber(statsData.total_clicks || 0);
+        document.getElementById('today-clicks').textContent = formatNumber(statsData.today_clicks || 0);
     } catch (error) {
         console.error('Failed to load stats:', error);
     }
