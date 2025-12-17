@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkShort - Modern URL Shortener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🔗</span>
+                <span class="logo-text">LinkShort</span>
+            </div>
+            <nav class="nav">
+                <div id="auth-buttons" class="auth-buttons">
+                    <button class="btn btn-ghost" onclick="showModal('login')">Login</button>
+                    <button class="btn btn-primary" onclick="showModal('register')">Sign Up</button>
+                </div>
+                <div id="user-menu" class="user-menu hidden">
+                    <span id="user-name" class="user-name"></span>
+                    <button class="btn btn-ghost" onclick="logout()">Logout</button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">
+                Shorten Your Links,<br>
+                <span class="gradient-text">Expand Your Reach</span>
+            </h1>
+            <p class="hero-subtitle">
+                Create short, memorable links in seconds. Track clicks and analyze your audience with powerful analytics.
+            </p>
+
+            <!-- URL Shortener Form -->
+            <div class="shortener-card">
+                <form id="shorten-form" class="shortener-form">
+                    <div class="input-group">
+                        <input 
+                            type="url" 
+                            id="url-input" 
+                            placeholder="Paste your long URL here..." 
+                            required
+                        >
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <span>Shorten</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="options-row">
+                        <label class="custom-code-toggle">
+                            <input type="checkbox" id="custom-code-toggle" onchange="toggleCustomCode()">
+                            <span>Custom alias</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="custom-code-input" 
+                            class="custom-code-input hidden" 
+                            placeholder="your-custom-alias"
+                            pattern="[a-zA-Z0-9-_]+"
+                        >
+                    </div>
+                </form>
+
+                <!-- Result -->
+                <div id="result" class="result hidden">
+                    <div class="result-content">
+                        <span class="result-label">Your shortened URL:</span>
+                        <div class="result-url-container">
+                            <a id="short-url" href="" target="_blank" class="result-url"></a>
+                            <button class="btn btn-icon" onclick="copyToClipboard()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="total-urls">0</span>
+                    <span class="stat-label">Links Created</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="total-clicks">0</span>
+                    <span class="stat-label">Total Clicks</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="today-clicks">0</span>
+                    <span class="stat-label">Today's Clicks</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Links -->
+        <section class="recent-section">
+            <h2 class="section-title">Recent Links</h2>
+            <div id="recent-links" class="links-grid">
+                <!-- Links will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features-section">
+            <h2 class="section-title">Why Choose LinkShort?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Create short links instantly with our optimized microservice architecture.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Detailed Analytics</h3>
+                    <p>Track clicks, devices, browsers, and more with real-time statistics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Your links are safe with us. Built with modern security practices.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with Go Microservices • Redis • PostgreSQL</p>
+            <p class="footer-links">
+                <a href="#">GitHub</a> • 
+                <a href="#">API Docs</a> • 
+                <a href="#">Status</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeModals()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModals()">×</button>
+            <h2>Welcome Back</h2>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+            </form>
+            <p class="modal-footer">
+                Don't have an account? 
+                <a href="#" onclick="showModal('register')">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeModals()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModals()">×</button>
+            <h2>Create Account</h2>
+            <form id="register-form" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="register-password" minlength="6" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            </form>
+            <p class="modal-footer">
+                Already have an account? 
+                <a href="#" onclick="showModal('login')">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeModals()"></div>
+        <div class="modal-content modal-wide">
+            <button class="modal-close" onclick="closeModals()">×</button>
+            <h2>Link Statistics</h2>
+            <div id="stats-content">
+                <!-- Stats will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

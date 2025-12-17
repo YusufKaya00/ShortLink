@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: urlshortener
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Pub/Sub
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # User Service
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres123@postgres:5432/urlshortener?sslmode=disable
+      - JWT_SECRET=super-secret-key-change-in-production
+      - PORT=8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # URL Service
+  url-service:
+    build: ./url-service
+    ports:
+      - "8082:8082"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres123@postgres:5432/urlshortener?sslmode=disable
+      - REDIS_URL=redis:6379
+      - USER_SERVICE_URL=http://user-service:8081
+      - PORT=8082
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Stats Service
+  stats-service:
+    build: ./stats-service
+    ports:
+      - "8083:8083"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres123@postgres:5432/urlshortener?sslmode=disable
+      - REDIS_URL=redis:6379
+      - PORT=8083
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - user-service
+      - url-service
+      - stats-service
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
