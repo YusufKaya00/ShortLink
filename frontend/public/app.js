@@ -1,8 +1,8 @@
 // API Configuration
 const API_BASE = {
-    user: 'http://localhost:8081',
-    url: 'http://localhost:8082',
-    stats: 'http://localhost:8083'
+    user: 'https://shortlink-b3tq.onrender.com',
+    url: 'https://url-service-p46t.onrender.com',
+    stats: 'https://stats-service-jlys.onrender.com'
 };
 
 // State
@@ -38,7 +38,7 @@ function updateAuthUI() {
 
 async function handleLogin(e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
@@ -71,7 +71,7 @@ async function handleLogin(e) {
 
 async function handleRegister(e) {
     e.preventDefault();
-    
+
     const name = document.getElementById('register-name').value;
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
@@ -116,7 +116,7 @@ function logout() {
 
 async function handleShorten(e) {
     e.preventDefault();
-    
+
     const urlInput = document.getElementById('url-input');
     const customCodeInput = document.getElementById('custom-code-input');
     const customCodeToggle = document.getElementById('custom-code-toggle');
@@ -150,7 +150,7 @@ async function handleShorten(e) {
         // Show result
         const resultDiv = document.getElementById('result');
         const shortUrlLink = document.getElementById('short-url');
-        
+
         shortUrlLink.href = data.short_url;
         shortUrlLink.textContent = data.short_url;
         resultDiv.classList.remove('hidden');
@@ -174,7 +174,7 @@ async function handleShorten(e) {
 function toggleCustomCode() {
     const toggle = document.getElementById('custom-code-toggle');
     const input = document.getElementById('custom-code-input');
-    
+
     if (toggle.checked) {
         input.classList.remove('hidden');
         input.focus();
@@ -186,7 +186,7 @@ function toggleCustomCode() {
 
 async function copyToClipboard() {
     const shortUrl = document.getElementById('short-url').textContent;
-    
+
     try {
         await navigator.clipboard.writeText(shortUrl);
         showToast('Copied to clipboard! 📋');
@@ -225,7 +225,7 @@ async function loadRecentLinks() {
         const data = await response.json();
 
         const container = document.getElementById('recent-links');
-        
+
         if (!data.urls || data.urls.length === 0) {
             container.innerHTML = `
                 <div class="link-card" style="text-align: center; grid-column: 1 / -1;">
@@ -269,7 +269,7 @@ async function showStats(shortCode) {
         const data = await response.json();
 
         const content = document.getElementById('stats-content');
-        
+
         content.innerHTML = `
             <div class="stats-detail">
                 <div class="stats-row">
@@ -340,8 +340,8 @@ document.addEventListener('keydown', (e) => {
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     toast.textContent = message;
-    toast.style.background = type === 'error' 
-        ? 'linear-gradient(135deg, #ef4444, #dc2626)' 
+    toast.style.background = type === 'error'
+        ? 'linear-gradient(135deg, #ef4444, #dc2626)'
         : 'linear-gradient(135deg, var(--primary), var(--primary-dark))';
     toast.classList.remove('hidden');
 
