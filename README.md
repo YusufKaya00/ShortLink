@@ -87,13 +87,6 @@ curl http://localhost:8083/api/stats/abc123 \
   -H "Authorization: Bearer <token>"
 ```
 
-## Deploy to Railway
-
-1. Create a new project on [Railway](https://railway.app)
-2. Add PostgreSQL and Redis from the Railway dashboard
-3. Deploy each service folder as a separate service
-4. Set environment variables for each service
-
 ## Tech Stack
 
 - **Language**: Go 1.21
